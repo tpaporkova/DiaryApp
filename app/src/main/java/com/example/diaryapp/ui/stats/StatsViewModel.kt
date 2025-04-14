@@ -35,10 +35,10 @@ class StatsViewModel(application: Application) : AndroidViewModel(application) {
                     val yearAgo = now.minusYears(1)
 
                     // Подсчитываем количество моментов, попадающих в каждую категорию
-                    val weekly = moments.count { it.dateTime.isAfter(weekAgo) }
-                    val monthly = moments.count { it.dateTime.isAfter(monthAgo) }
-                    val quarterly = moments.count { it.dateTime.isAfter(quarterAgo) }
-                    val yearly = moments.count { it.dateTime.isAfter(yearAgo) }
+                    val weekly = moments.count { it.date.isNotEmpty() && LocalDateTime.parse(it.date).isAfter(weekAgo) }
+                    val monthly = moments.count { it.date.isNotEmpty() && LocalDateTime.parse(it.date).isAfter(monthAgo) }
+                    val quarterly = moments.count { it.date.isNotEmpty() && LocalDateTime.parse(it.date).isAfter(quarterAgo) }
+                    val yearly = moments.count { it.date.isNotEmpty() && LocalDateTime.parse(it.date).isAfter(yearAgo) }
 
                     // Обновляем статистику
                     _stats.postValue(

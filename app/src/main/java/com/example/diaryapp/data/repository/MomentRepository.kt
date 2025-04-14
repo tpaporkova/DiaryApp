@@ -4,7 +4,6 @@ import com.example.diaryapp.data.local.dao.MomentDao
 import com.example.diaryapp.data.local.entities.Moment
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import java.time.LocalDateTime
 
 class MomentRepository(private val momentDao: MomentDao) {
 
@@ -25,12 +24,6 @@ class MomentRepository(private val momentDao: MomentDao) {
     suspend fun deleteMoment(moment: Moment) {
         withContext(Dispatchers.IO) {
             momentDao.deleteMoment(moment)
-        }
-    }
-
-    suspend fun getMomentsAfter(startDate: LocalDateTime): List<Moment> {
-        return withContext(Dispatchers.IO) {
-            momentDao.getMomentsAfter(startDate)
         }
     }
 

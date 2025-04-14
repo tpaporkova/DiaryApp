@@ -1,15 +1,12 @@
 package com.example.diaryapp.ui.moment
 
-import android.os.Build
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.diaryapp.data.local.entities.Moment
 import com.example.diaryapp.databinding.ItemMomentBinding
-import java.time.format.DateTimeFormatter
 
 class MomentAdapter(private val onClick: (Moment) -> Unit) :
     ListAdapter<Moment, MomentAdapter.MomentViewHolder>(MomentDiffCallback()) {
@@ -19,7 +16,6 @@ class MomentAdapter(private val onClick: (Moment) -> Unit) :
         return MomentViewHolder(binding)
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
     override fun onBindViewHolder(holder: MomentViewHolder, position: Int) {
         val moment = getItem(position)
         holder.bind(moment)
@@ -31,21 +27,15 @@ class MomentAdapter(private val onClick: (Moment) -> Unit) :
         init {
             binding.root.setOnClickListener {
                 val moment = getItem(adapterPosition)
-                if (moment != null) {
-                    onClick(moment)
-                }
+                onClick(moment)
             }
         }
 
-        @RequiresApi(Build.VERSION_CODES.O)
         fun bind(moment: Moment) {
-            binding.title.text = moment.title
             binding.note.text = moment.note
             binding.location.text = moment.location
-
-            // Преобразуем LocalDateTime в строку для отображения
-            val formattedDateTime = moment.dateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))
-            binding.date.text = formattedDateTime
+            binding.date.text = moment.date
+            binding.type.text = moment.type
         }
     }
 }

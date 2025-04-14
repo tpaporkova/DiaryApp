@@ -1,8 +1,11 @@
 package com.example.diaryapp.ui.moment
 
+import android.app.DatePickerDialog
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.*
+import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
@@ -11,8 +14,9 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.example.diaryapp.data.local.entities.Moment
 import com.example.diaryapp.databinding.FragmentEditMomentBinding
-import java.time.LocalDateTime
+import java.time.LocalDate
 import java.time.format.DateTimeFormatter
+import java.util.*
 
 class EditMomentFragment : Fragment() {
 
@@ -25,6 +29,8 @@ class EditMomentFragment : Fragment() {
         MomentViewModel.Factory(requireActivity().application)
     }
 
+    private val eventTypes = listOf("Свидание", "Кино", "Театр", "Путешествие", "Сюрприз", "Цветы")
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -35,53 +41,85 @@ class EditMomentFragment : Fragment() {
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        val momentId = args.momentId
-        if (momentId != 0) {
-            viewModel.loadMoment(momentId.toLong()) // Преобразуем momentId в Long
+        super.onViewCreated(view, savedInstanceState)
+
+        // Настройка Spinner для выбора типа события
+        val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, eventTypes)
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        binding.editType.adapter = adapter
+
+        // Преобразование momentId в Long
+        val momentId = args.momentId.toLong()
+
+        if (momentId != 0L) {
+            viewModel.loadMoment(momentId)
         }
 
         viewModel.currentMoment.observe(viewLifecycleOwner) { moment ->
-            if (moment != null) {
-                binding.editTitle.setText(moment.title)
+            moment?.let {
                 binding.editNote.setText(moment.note)
                 binding.editLocation.setText(moment.location)
-                binding.editType.setText(moment.type)
-                binding.editDescription.setText(moment.description)
-                // Форматируем дату и отображаем в поле
-                val dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
-                binding.editDate.setText(moment.dateTime.format(dateTimeFormatter)) // Преобразуем LocalDateTime в строку
+                binding.editType.setSelection(eventTypes.indexOf(moment.type))
+                binding.editDate.setText(moment.date)
             }
         }
 
+        // Открытие календаря при клике на поле с датой
+        binding.editDate.setOnClickListener {
+            val calendar = Calendar.getInstance()
+            val year = calendar.get(Calendar.YEAR)
+            val month = calendar.get(Calendar.MONTH)
+            val dayOfMonth = calendar.get(Calendar.DAY_OF_MONTH)
+
+            val datePickerDialog = DatePickerDialog(
+                requireContext(),
+                { _, selectedYear, selectedMonth, selectedDay ->
+                    val selectedDate = LocalDate.of(selectedYear, selectedMonth + 1, selectedDay)
+                    binding.editDate.setText(selectedDate.format(DateTimeFormatter.ISO_LOCAL_DATE))
+                },
+                year,
+                month,
+                dayOfMonth
+            )
+            datePickerDialog.show()
+        }
+
+        // Обработка нажатия кнопки сохранения
         binding.buttonSave.setOnClickListener {
-            val title = binding.editTitle.text.toString()
             val note = binding.editNote.text.toString()
             val location = binding.editLocation.text.toString()
-            val type = binding.editType.text.toString()
-            val description = binding.editDescription.text.toString()
+            val type = binding.editType.selectedItem.toString()
             val date = binding.editDate.text.toString()
 
-            if (title.isBlank() || note.isBlank() || description.isBlank() || date.isBlank()) {
+            if (note.isBlank() || location.isBlank() || type.isBlank() || date.isBlank()) {
                 Toast.makeText(requireContext(), "Please fill in all fields", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
-            // Преобразуем строку даты в LocalDateTime
-            val dateTime = LocalDateTime.now()
-
             val moment = Moment(
-                id = momentId.toLong(),
-                title = title,
-                description = description,
-                date = date, // Дата как строка
+                id = momentId, // Теперь используем momentId как Long
                 note = note,
                 location = location,
                 type = type,
-                dateTime = dateTime // Сохраняем LocalDateTime
+                date = date // Дату сохраняем как строку
             )
 
-            if (momentId.toLong() == 0L) viewModel.insert(moment)
-            else viewModel.update(moment)
+            // Вставка или обновление момента с обработкой ошибок
+            if (momentId == 0L) {
+                try {
+                    viewModel.insert(moment)
+                } catch (e: Exception) {
+                    Log.e("EditMomentFragment", "Error inserting moment", e)
+                    Toast.makeText(requireContext(), "Error saving moment", Toast.LENGTH_SHORT).show()
+                }
+            } else {
+                try {
+                    viewModel.update(moment)
+                } catch (e: Exception) {
+                    Log.e("EditMomentFragment", "Error updating moment", e)
+                    Toast.makeText(requireContext(), "Error updating moment", Toast.LENGTH_SHORT).show()
+                }
+            }
 
             findNavController().navigateUp()
         }
