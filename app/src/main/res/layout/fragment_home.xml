@@ -5,20 +5,8 @@
 
     <data>
         <variable
-            name="daysTogether"
-            type="String" />
-        <variable
-            name="anniversaryIn"
-            type="String" />
-        <variable
-            name="userName"
-            type="String" />
-        <variable
-            name="partnerName"
-            type="String" />
-        <variable
-            name="startDate"
-            type="String" />
+            name="viewModel"
+            type="com.example.diaryapp.ui.home.HomeViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -28,25 +16,29 @@
 
         <!-- Поле для имени пользователя -->
         <EditText
-            android:id="@+id/userNameEditText"
+            android:id="@+id/editUserName"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:hint="Имя пользователя"
-            android:text="@={userName}"
+            android:text="@{viewModel.userName}"
+            android:padding="16dp"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            android:padding="16dp" />
+            app:layout_constraintEnd_toStartOf="@id/profileImageView"
+            app:layout_constraintHorizontal_bias="0.0" />
 
-        <!-- Поле для имени второй половинки -->
+        <!-- Поле для имени партнера -->
         <EditText
-            android:id="@+id/partnerNameEditText"
+            android:id="@+id/editPartnerName"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:hint="Имя партнера"
-            android:text="@={partnerName}"
-            app:layout_constraintTop_toBottomOf="@id/userNameEditText"
+            android:text="@{viewModel.partnerName}"
+            android:padding="16dp"
+            app:layout_constraintTop_toBottomOf="@id/editUserName"
             app:layout_constraintStart_toStartOf="parent"
-            android:padding="16dp" />
+            app:layout_constraintEnd_toStartOf="@id/profileImageView"
+            app:layout_constraintHorizontal_bias="0.0" />
 
         <!-- Поле для даты начала отношений -->
         <EditText
@@ -56,33 +48,45 @@
             android:hint="Начало отношений"
             android:focusable="false"
             android:clickable="true"
-            android:text="@={startDate}"
+            android:text="@{viewModel.startDate}"
             android:padding="16dp"
-            app:layout_constraintTop_toBottomOf="@id/partnerNameEditText"
-            app:layout_constraintStart_toStartOf="parent" />
+            app:layout_constraintTop_toBottomOf="@id/editPartnerName"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
 
-        <!-- Элементы для отображения количества дней вместе и до годовщины -->
+        <!-- Кнопка "Сохранить имена" -->
+        <Button
+            android:id="@+id/buttonSaveNames"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Сохранить имена"
+            app:layout_constraintTop_toBottomOf="@id/startDateEditText"
+            app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginTop="16dp" />
+
+        <!-- Количество дней вместе -->
         <TextView
             android:id="@+id/daysTogetherTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@{daysTogether}"
+            android:text='@{viewModel.daysTogether}'
             android:textSize="24sp"
-            app:layout_constraintTop_toBottomOf="@id/startDateEditText"
-            app:layout_constraintStart_toStartOf="parent"
-            android:padding="16dp" />
+            android:padding="16dp"
+            app:layout_constraintTop_toBottomOf="@id/buttonSaveNames"
+            app:layout_constraintStart_toStartOf="parent" />
 
+        <!-- Годовщина -->
         <TextView
             android:id="@+id/anniversaryInTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@{anniversaryIn}"
+            android:text='@{viewModel.anniversaryIn}'
             android:textSize="24sp"
+            android:padding="16dp"
             app:layout_constraintTop_toBottomOf="@id/daysTogetherTextView"
-            app:layout_constraintStart_toStartOf="parent"
-            android:padding="16dp" />
+            app:layout_constraintStart_toStartOf="parent" />
 
-        <!-- ImageView для отображения профиля, расположенное в правом верхнем углу -->
+        <!-- Аватар -->
         <ImageView
             android:id="@+id/profileImageView"
             android:layout_width="100dp"
@@ -93,27 +97,25 @@
             android:layout_marginTop="16dp"
             android:layout_marginEnd="16dp" />
 
-        <!-- Кнопка добавления нового момента -->
+        <!-- Кнопка "Добавить момент" -->
         <Button
             android:id="@+id/buttonAddMoment"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Добавить момент"
-            app:layout_constraintTop_toBottomOf="@id/anniversaryInTextView"
-            app:layout_constraintStart_toStartOf="parent"
             android:layout_marginTop="16dp"
-            android:layout_centerHorizontal="true"/>
+            app:layout_constraintTop_toBottomOf="@id/anniversaryInTextView"
+            app:layout_constraintStart_toStartOf="parent" />
 
-        <!-- Кнопка для просмотра списка моментов -->
+        <!-- Кнопка "Показать моменты" -->
         <Button
             android:id="@+id/buttonViewMoments"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Показать моменты"
-            app:layout_constraintTop_toBottomOf="@id/buttonAddMoment"
-            app:layout_constraintStart_toStartOf="parent"
             android:layout_marginTop="16dp"
-            android:layout_centerHorizontal="true" />
+            app:layout_constraintTop_toBottomOf="@id/buttonAddMoment"
+            app:layout_constraintStart_toStartOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

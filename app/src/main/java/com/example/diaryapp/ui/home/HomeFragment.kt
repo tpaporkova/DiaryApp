@@ -8,12 +8,12 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
+import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
-import com.example.diaryapp.databinding.FragmentHomeBinding
 import com.example.diaryapp.R
+import com.example.diaryapp.databinding.FragmentHomeBinding
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -32,9 +32,10 @@ class HomeFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        _binding = FragmentHomeBinding.inflate(inflater, container, false)
+    ): View {
+        _binding = DataBindingUtil.inflate(inflater, R.layout.fragment_home, container, false)
         binding.lifecycleOwner = viewLifecycleOwner
+        binding.viewModel = viewModel
         return binding.root
     }
 
@@ -42,29 +43,6 @@ class HomeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Привязываем данные ViewModel к DataBinding
-        viewModel.daysTogether.observe(viewLifecycleOwner, Observer {
-            binding.daysTogether = it
-        })
-
-        viewModel.anniversaryIn.observe(viewLifecycleOwner, Observer {
-            binding.anniversaryIn = it
-        })
-
-        // Привязываем данные из ViewModel
-        viewModel.userName.observe(viewLifecycleOwner, Observer {
-            binding.userName = it
-        })
-
-        viewModel.partnerName.observe(viewLifecycleOwner, Observer {
-            binding.partnerName = it
-        })
-
-        viewModel.startDate.observe(viewLifecycleOwner, Observer {
-            binding.startDate = it
-        })
-
-        // Настроить обработку выбора даты
         binding.startDateEditText.setOnClickListener {
             showDatePicker()
         }
@@ -73,13 +51,20 @@ class HomeFragment : Fragment() {
             openImagePicker()
         }
 
-        // Добавляем обработчик для кнопки добавления нового момента
+        binding.buttonSaveNames.setOnClickListener {
+            // Сохраняем имена вручную (вдруг EditText не успел отдать текст в two-way binding)
+            val userName = binding.editUserName.text.toString()
+            val partnerName = binding.editPartnerName.text.toString()
+            val startDate = viewModel.startDate.value ?: ""
+
+            viewModel.updateUserData(userName, partnerName, startDate)
+        }
+
         binding.buttonAddMoment.setOnClickListener {
-            val action = HomeFragmentDirections.actionHomeFragmentToEditMomentFragment(momentId = 0)  // передаем momentId
+            val action = HomeFragmentDirections.actionHomeFragmentToEditMomentFragment(momentId = 0)
             findNavController().navigate(action)
         }
 
-        // Добавляем обработчик для кнопки просмотра всех моментов
         binding.buttonViewMoments.setOnClickListener {
             findNavController().navigate(R.id.action_homeFragment_to_momentListFragment)
         }
@@ -89,7 +74,6 @@ class HomeFragment : Fragment() {
         pickImage.launch("image/*")
     }
 
-    // Показываем диалог для выбора даты начала отношений
     private fun showDatePicker() {
         val calendar = Calendar.getInstance()
         val datePickerDialog = DatePickerDialog(
@@ -101,7 +85,6 @@ class HomeFragment : Fragment() {
                 val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
                 val formattedDate = dateFormat.format(selectedDate.time)
 
-                // Обновляем дату начала отношений в ViewModel
                 viewModel.updateStartDate(formattedDate)
             },
             calendar.get(Calendar.YEAR),
