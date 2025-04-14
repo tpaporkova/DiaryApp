@@ -1,5 +1,6 @@
 package com.example.diaryapp.ui.home
 
+import android.net.Uri
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -13,6 +14,9 @@ class HomeViewModel : ViewModel() {
 
     private val _partnerName = MutableLiveData<String>("")
     val partnerName: LiveData<String> get() = _partnerName
+
+    private val _startDate = MutableLiveData<String>("")
+    val startDate: LiveData<String> get() = _startDate
 
     private val _daysTogether = MutableLiveData<String>("")
     val daysTogether: LiveData<String> get() = _daysTogether
@@ -29,10 +33,9 @@ class HomeViewModel : ViewModel() {
     private val _anniversaryIn = MutableLiveData<String>("")
     val anniversaryIn: LiveData<String> get() = _anniversaryIn
 
-    private val _startDate = MutableLiveData<String>("")
-    val startDate: LiveData<String> get() = _startDate
+    private val _profileImageUri = MutableLiveData<Uri?>()
+    val profileImageUri: LiveData<Uri?> get() = _profileImageUri
 
-    // Отдельные методы для обновления
     fun updateUserName(name: String) {
         _userName.value = name
     }
@@ -46,7 +49,6 @@ class HomeViewModel : ViewModel() {
         calculateRelationshipStats()
     }
 
-    // Метод для обновления всех данных (если нужно сразу)
     fun updateUserData(userName: String, partnerName: String, startDate: String) {
         _userName.value = userName
         _partnerName.value = partnerName
@@ -54,32 +56,36 @@ class HomeViewModel : ViewModel() {
         calculateRelationshipStats()
     }
 
+    fun updateProfileImage(uri: Uri?) {
+        _profileImageUri.value = uri
+    }
+
     private fun calculateRelationshipStats() {
         val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
         val startDateValue = _startDate.value ?: return
 
         try {
-            val startDate = dateFormat.parse(startDateValue)
+            val startDate = dateFormat.parse(startDateValue) ?: return
             val currentDate = Calendar.getInstance().time
 
             val diffInMillis = currentDate.time - startDate.time
-            val daysTogether = (diffInMillis / (1000 * 60 * 60 * 24)).toInt()
-            val weeksTogether = (daysTogether / 7).toInt()
-            val monthsTogether = (daysTogether / 30).toInt()
-            val yearsTogether = (daysTogether / 365).toInt()
+            val days = (diffInMillis / (1000 * 60 * 60 * 24)).toInt()
+            val weeks = days / 7
+            val months = days / 30
+            val years = days / 365
 
             val anniversary = Calendar.getInstance().apply {
                 time = startDate
-                add(Calendar.YEAR, 1)
+                add(Calendar.YEAR, years + 1)
             }.time
-            val diffToAnniversary = anniversary.time - currentDate.time
-            val daysToAnniversary = (diffToAnniversary / (1000 * 60 * 60 * 24)).toInt()
+            val daysToAnniversary = ((anniversary.time - currentDate.time) / (1000 * 60 * 60 * 24)).toInt()
 
-            _daysTogether.value = "Дней вместе: $daysTogether дн."
-            _weeksTogether.value = "Недель вместе: $weeksTogether нед."
-            _monthsTogether.value = "Месяцев вместе: $monthsTogether мес."
-            _yearsTogether.value = "Лет вместе: $yearsTogether лет."
+            _daysTogether.value = "Дней вместе: $days дн."
+            _weeksTogether.value = "Недель вместе: $weeks нед."
+            _monthsTogether.value = "Месяцев вместе: $months мес."
+            _yearsTogether.value = "Лет вместе: $years лет."
             _anniversaryIn.value = "Годовщина через: $daysToAnniversary дн."
+
         } catch (e: Exception) {
             _daysTogether.value = ""
             _weeksTogether.value = ""
