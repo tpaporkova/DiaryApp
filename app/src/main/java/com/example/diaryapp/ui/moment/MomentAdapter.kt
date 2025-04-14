@@ -2,6 +2,7 @@ package com.example.diaryapp.ui.moment
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import android.util.Log
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -27,6 +28,7 @@ class MomentAdapter(private val onClick: (Moment) -> Unit) :
         init {
             binding.root.setOnClickListener {
                 val moment = getItem(adapterPosition)
+                Log.d("MomentAdapter", "Item clicked: ${moment.id}")  // Логируем клик по элементу
                 onClick(moment)
             }
         }

@@ -43,12 +43,11 @@ class EditMomentFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Настройка Spinner для выбора типа события
+        // Настройка Spinner
         val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, eventTypes)
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         binding.editType.adapter = adapter
 
-        // Преобразование momentId в Long
         val momentId = args.momentId.toLong()
 
         if (momentId != 0L) {
@@ -64,12 +63,11 @@ class EditMomentFragment : Fragment() {
             }
         }
 
-        // Открытие календаря при клике на поле с датой
         binding.editDate.setOnClickListener {
             val calendar = Calendar.getInstance()
             val year = calendar.get(Calendar.YEAR)
             val month = calendar.get(Calendar.MONTH)
-            val dayOfMonth = calendar.get(Calendar.DAY_OF_MONTH)
+            val day = calendar.get(Calendar.DAY_OF_MONTH)
 
             val datePickerDialog = DatePickerDialog(
                 requireContext(),
@@ -79,12 +77,11 @@ class EditMomentFragment : Fragment() {
                 },
                 year,
                 month,
-                dayOfMonth
+                day
             )
             datePickerDialog.show()
         }
 
-        // Обработка нажатия кнопки сохранения
         binding.buttonSave.setOnClickListener {
             val note = binding.editNote.text.toString()
             val location = binding.editLocation.text.toString()
@@ -97,31 +94,30 @@ class EditMomentFragment : Fragment() {
             }
 
             val moment = Moment(
-                id = momentId, // Теперь используем momentId как Long
+                id = momentId,
                 note = note,
                 location = location,
                 type = type,
-                date = date // Дату сохраняем как строку
+                date = date
             )
 
-            // Вставка или обновление момента с обработкой ошибок
             if (momentId == 0L) {
-                try {
-                    viewModel.insert(moment)
-                } catch (e: Exception) {
-                    Log.e("EditMomentFragment", "Error inserting moment", e)
-                    Toast.makeText(requireContext(), "Error saving moment", Toast.LENGTH_SHORT).show()
-                }
+                viewModel.insert(moment)
             } else {
-                try {
-                    viewModel.update(moment)
-                } catch (e: Exception) {
-                    Log.e("EditMomentFragment", "Error updating moment", e)
-                    Toast.makeText(requireContext(), "Error updating moment", Toast.LENGTH_SHORT).show()
-                }
+                viewModel.update(moment)
             }
+        }
 
-            findNavController().navigateUp()
+        // Наблюдаем за результатом вставки/обновления
+        viewModel.insertionSuccess.observe(viewLifecycleOwner) { success ->
+            success?.let {
+                if (it) {
+                    findNavController().navigateUp()
+                } else {
+                    Toast.makeText(requireContext(), "Ошибка при сохранении момента", Toast.LENGTH_SHORT).show()
+                }
+                viewModel.resetInsertionStatus()
+            }
         }
     }
 

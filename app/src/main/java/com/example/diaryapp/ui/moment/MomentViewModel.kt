@@ -7,19 +7,25 @@ import com.example.diaryapp.data.local.AppDatabase
 import com.example.diaryapp.data.local.entities.Moment
 import com.example.diaryapp.data.repository.MomentRepository
 import kotlinx.coroutines.launch
+import androidx.lifecycle.asLiveData
 
 class MomentViewModel(application: Application) : AndroidViewModel(application) {
 
     private val repository = MomentRepository(AppDatabase.getDatabase(application).momentDao())
-    val allMoments: LiveData<List<Moment>> = repository.allMoments
+
+    val allMoments: LiveData<List<Moment>> = repository.allMoments.asLiveData()
 
     private val _currentMoment = MutableLiveData<Moment?>()
     val currentMoment: LiveData<Moment?> = _currentMoment
+
+    private val _insertionSuccess = MutableLiveData<Boolean?>()
+    val insertionSuccess: LiveData<Boolean?> = _insertionSuccess
 
     fun loadMoment(id: Long) {
         viewModelScope.launch {
             try {
                 _currentMoment.value = repository.getMomentById(id)
+                Log.d("MomentViewModel", "Loaded moment with ID: $id")
             } catch (e: Exception) {
                 Log.e("MomentViewModel", "Error loading moment", e)
             }
@@ -28,23 +34,30 @@ class MomentViewModel(application: Application) : AndroidViewModel(application) 
 
     fun insert(moment: Moment) = viewModelScope.launch {
         try {
-            repository.addMoment(moment)
+            repository.insertMoment(moment)
+            Log.d("MomentViewModel", "Moment inserted: $moment")
         } catch (e: Exception) {
-            Log.e("MomentViewModel", "Error inserting moment", e)
+            Log.e("MomentViewModel", "Error inserting moment: ${e.message}", e)
         }
     }
 
     fun update(moment: Moment) = viewModelScope.launch {
         try {
             repository.updateMoment(moment)
+            Log.d("MomentViewModel", "Moment updated: $moment")  // Логируем обновление момента
         } catch (e: Exception) {
             Log.e("MomentViewModel", "Error updating moment", e)
         }
     }
 
+    fun resetInsertionStatus() {
+        _insertionSuccess.value = null
+    }
+
     fun delete(moment: Moment) = viewModelScope.launch {
         try {
             repository.deleteMoment(moment)
+            Log.d("MomentViewModel", "Moment deleted: $moment")
         } catch (e: Exception) {
             Log.e("MomentViewModel", "Error deleting moment", e)
         }

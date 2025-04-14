@@ -6,6 +6,7 @@ import androidx.annotation.RequiresApi
 import androidx.lifecycle.*
 import com.example.diaryapp.data.local.AppDatabase
 import com.example.diaryapp.data.repository.MomentRepository
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -25,29 +26,27 @@ class StatsViewModel(application: Application) : AndroidViewModel(application) {
     @RequiresApi(Build.VERSION_CODES.O)
     private fun calculateStats() {
         viewModelScope.launch {
-            // Получаем список моментов из репозитория
-            repository.allMoments.observeForever { moments ->
-                moments?.let {
-                    val now = LocalDateTime.now()
-                    val weekAgo = now.minusWeeks(1)
-                    val monthAgo = now.minusMonths(1)
-                    val quarterAgo = now.minusMonths(3)
-                    val yearAgo = now.minusYears(1)
+            // Получаем Flow с моментами из репозитория
+            repository.allMoments.collect { moments ->
+                val now = LocalDateTime.now()
+                val weekAgo = now.minusWeeks(1)
+                val monthAgo = now.minusMonths(1)
+                val quarterAgo = now.minusMonths(3)
+                val yearAgo = now.minusYears(1)
 
-                    // Подсчитываем количество моментов, попадающих в каждую категорию
-                    val weekly = moments.count { it.date.isNotEmpty() && LocalDateTime.parse(it.date).isAfter(weekAgo) }
-                    val monthly = moments.count { it.date.isNotEmpty() && LocalDateTime.parse(it.date).isAfter(monthAgo) }
-                    val quarterly = moments.count { it.date.isNotEmpty() && LocalDateTime.parse(it.date).isAfter(quarterAgo) }
-                    val yearly = moments.count { it.date.isNotEmpty() && LocalDateTime.parse(it.date).isAfter(yearAgo) }
+                // Подсчитываем количество моментов, попадающих в каждую категорию
+                val weekly = moments.count { it.date.isNotEmpty() && LocalDateTime.parse(it.date).isAfter(weekAgo) }
+                val monthly = moments.count { it.date.isNotEmpty() && LocalDateTime.parse(it.date).isAfter(monthAgo) }
+                val quarterly = moments.count { it.date.isNotEmpty() && LocalDateTime.parse(it.date).isAfter(quarterAgo) }
+                val yearly = moments.count { it.date.isNotEmpty() && LocalDateTime.parse(it.date).isAfter(yearAgo) }
 
-                    // Обновляем статистику
-                    _stats.postValue(
-                        "Last week: $weekly moments\n" +
-                                "Last month: $monthly moments\n" +
-                                "Last quarter: $quarterly moments\n" +
-                                "Last year: $yearly moments"
-                    )
-                }
+                // Обновляем статистику
+                _stats.postValue(
+                    "Last week: $weekly moments\n" +
+                            "Last month: $monthly moments\n" +
+                            "Last quarter: $quarterly moments\n" +
+                            "Last year: $yearly moments"
+                )
             }
         }
     }

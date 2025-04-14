@@ -1,15 +1,16 @@
+// AppDatabase.kt
 package com.example.diaryapp.data.local
 
-import androidx.room.TypeConverters
 import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import androidx.room.migration.Migration
+import androidx.sqlite.db.SupportSQLiteDatabase
 import com.example.diaryapp.data.local.dao.MomentDao
 import com.example.diaryapp.data.local.entities.Moment
 
-@Database(entities = [Moment::class], version = 1, exportSchema = false)
-@TypeConverters(Converters::class)
+@Database(entities = [Moment::class], version = 2, exportSchema = false)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun momentDao(): MomentDao
 
@@ -23,7 +24,9 @@ abstract class AppDatabase : RoomDatabase() {
                     context.applicationContext,
                     AppDatabase::class.java,
                     "diary_database"
-                ).build()
+                )
+                    .fallbackToDestructiveMigration()
+                    .build()
                 INSTANCE = instance
                 instance
             }
