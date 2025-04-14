@@ -9,40 +9,32 @@ import java.util.*
 
 class HomeViewModel : ViewModel() {
 
-    private val _userName = MutableLiveData<String>("")
+    private val _userName = MutableLiveData("")
     val userName: LiveData<String> get() = _userName
 
-    private val _partnerName = MutableLiveData<String>("")
+    private val _partnerName = MutableLiveData("")
     val partnerName: LiveData<String> get() = _partnerName
 
-    private val _startDate = MutableLiveData<String>("")
+    private val _startDate = MutableLiveData("")
     val startDate: LiveData<String> get() = _startDate
 
-    private val _daysTogether = MutableLiveData<String>("")
+    private val _daysTogether = MutableLiveData("")
     val daysTogether: LiveData<String> get() = _daysTogether
 
-    private val _weeksTogether = MutableLiveData<String>("")
+    private val _weeksTogether = MutableLiveData("")
     val weeksTogether: LiveData<String> get() = _weeksTogether
 
-    private val _monthsTogether = MutableLiveData<String>("")
+    private val _monthsTogether = MutableLiveData("")
     val monthsTogether: LiveData<String> get() = _monthsTogether
 
-    private val _yearsTogether = MutableLiveData<String>("")
+    private val _yearsTogether = MutableLiveData("")
     val yearsTogether: LiveData<String> get() = _yearsTogether
 
-    private val _anniversaryIn = MutableLiveData<String>("")
+    private val _anniversaryIn = MutableLiveData("")
     val anniversaryIn: LiveData<String> get() = _anniversaryIn
 
     private val _profileImageUri = MutableLiveData<Uri?>()
     val profileImageUri: LiveData<Uri?> get() = _profileImageUri
-
-    fun updateUserName(name: String) {
-        _userName.value = name
-    }
-
-    fun updatePartnerName(name: String) {
-        _partnerName.value = name
-    }
 
     fun updateStartDate(startDate: String) {
         _startDate.value = startDate

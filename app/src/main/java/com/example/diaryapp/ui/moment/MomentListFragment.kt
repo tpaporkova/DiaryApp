@@ -6,7 +6,6 @@ import android.util.Log
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
-import com.example.diaryapp.R
 import com.example.diaryapp.databinding.FragmentMomentListBinding
 import androidx.recyclerview.widget.LinearLayoutManager
 
@@ -35,7 +34,6 @@ class MomentListFragment : Fragment() {
             findNavController().navigate(action)
         }
 
-        // 👉 Обязательно устанавливаем LayoutManager
         binding.recyclerView.layoutManager = LinearLayoutManager(requireContext())
 
         binding.recyclerView.adapter = adapter

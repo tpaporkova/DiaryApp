@@ -59,13 +59,13 @@ class HomeFragment : Fragment() {
             viewModel.updateUserData(userName, partnerName, startDate)
         }
 
-        viewModel.profileImageUri.observe(viewLifecycleOwner, Observer { uri ->
+        viewModel.profileImageUri.observe(viewLifecycleOwner) { uri ->
             if (uri != null) {
                 binding.profileImageView.setImageURI(uri)
             } else {
                 binding.profileImageView.setImageResource(R.drawable.ic_profile)
             }
-        })
+        }
 
         binding.buttonAddMoment.setOnClickListener {
             val action = HomeFragmentDirections.actionHomeFragmentToEditMomentFragment(momentId = 0)
@@ -74,6 +74,10 @@ class HomeFragment : Fragment() {
 
         binding.buttonViewMoments.setOnClickListener {
             findNavController().navigate(R.id.action_homeFragment_to_momentListFragment)
+        }
+
+        binding.buttonStats.setOnClickListener {
+            findNavController().navigate(R.id.action_homeFragment_to_statsFragment)
         }
     }
 

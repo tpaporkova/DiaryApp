@@ -28,7 +28,7 @@ class MomentAdapter(private val onClick: (Moment) -> Unit) :
         init {
             binding.root.setOnClickListener {
                 val moment = getItem(adapterPosition)
-                Log.d("MomentAdapter", "Item clicked: ${moment.id}")  // Логируем клик по элементу
+                Log.d("MomentAdapter", "Item clicked: ${moment.id}")
                 onClick(moment)
             }
         }

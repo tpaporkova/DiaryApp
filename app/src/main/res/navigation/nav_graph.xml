@@ -3,13 +3,12 @@
     xmlns:tools="http://schemas.android.com/tools"
     app:startDestination="@id/homeFragment">
 
-    <!-- Фрагмент HomeFragment -->
     <fragment
         android:id="@+id/homeFragment"
         android:name="com.example.diaryapp.ui.home.HomeFragment"
-        android:label="Home Fragment"
+        android:label="Дневник влюбленных"
         tools:layout="@layout/fragment_home">
-        <!-- Действие к EditMomentFragment -->
+
         <action
             android:id="@+id/action_homeFragment_to_editMomentFragment"
             app:destination="@id/editMomentFragment">
@@ -18,17 +17,19 @@
                 app:argType="integer" />
         </action>
 
-        <!-- Действие к MomentListFragment -->
         <action
             android:id="@+id/action_homeFragment_to_momentListFragment"
             app:destination="@id/momentListFragment" />
+
+        <action
+            android:id="@+id/action_homeFragment_to_statsFragment"
+            app:destination="@id/statsFragment" />
     </fragment>
 
-    <!-- Фрагмент MomentListFragment -->
     <fragment
         android:id="@+id/momentListFragment"
         android:name="com.example.diaryapp.ui.moment.MomentListFragment"
-        android:label="Moment List"
+        android:label="Список моментов"
         tools:layout="@layout/fragment_moment_list">
         <action
             android:id="@+id/action_momentList_to_editMoment"
@@ -39,14 +40,21 @@
         </action>
     </fragment>
 
-    <!-- Фрагмент EditMomentFragment -->
     <fragment
         android:id="@+id/editMomentFragment"
         android:name="com.example.diaryapp.ui.moment.EditMomentFragment"
-        android:label="Edit Moment"
+        android:label="Редактировать момент"
         tools:layout="@layout/fragment_edit_moment">
         <argument
             android:name="momentId"
             app:argType="integer" />
     </fragment>
+
+    <fragment
+        android:id="@+id/statsFragment"
+        android:name="com.example.diaryapp.ui.stats.StatsFragment"
+        android:label="Статистика моментов"
+        tools:layout="@layout/fragment_stats"
+        tools:targetApi="26" />
+
 </navigation>

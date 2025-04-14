@@ -6,9 +6,9 @@ import androidx.annotation.RequiresApi
 import androidx.lifecycle.*
 import com.example.diaryapp.data.local.AppDatabase
 import com.example.diaryapp.data.repository.MomentRepository
-import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
-import java.time.LocalDateTime
+import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -23,30 +23,40 @@ class StatsViewModel(application: Application) : AndroidViewModel(application) {
         calculateStats()
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
     private fun calculateStats() {
         viewModelScope.launch {
-            // Получаем Flow с моментами из репозитория
-            repository.allMoments.collect { moments ->
-                val now = LocalDateTime.now()
-                val weekAgo = now.minusWeeks(1)
-                val monthAgo = now.minusMonths(1)
-                val quarterAgo = now.minusMonths(3)
-                val yearAgo = now.minusYears(1)
+            repository.allMoments.collectLatest { moments ->
+                val formatter = DateTimeFormatter.ISO_LOCAL_DATE
+                val now = LocalDate.now()
 
-                // Подсчитываем количество моментов, попадающих в каждую категорию
-                val weekly = moments.count { it.date.isNotEmpty() && LocalDateTime.parse(it.date).isAfter(weekAgo) }
-                val monthly = moments.count { it.date.isNotEmpty() && LocalDateTime.parse(it.date).isAfter(monthAgo) }
-                val quarterly = moments.count { it.date.isNotEmpty() && LocalDateTime.parse(it.date).isAfter(quarterAgo) }
-                val yearly = moments.count { it.date.isNotEmpty() && LocalDateTime.parse(it.date).isAfter(yearAgo) }
-
-                // Обновляем статистику
-                _stats.postValue(
-                    "Last week: $weekly moments\n" +
-                            "Last month: $monthly moments\n" +
-                            "Last quarter: $quarterly moments\n" +
-                            "Last year: $yearly moments"
+                val intervals = mapOf(
+                    "Неделя" to now.minusWeeks(1),
+                    "Месяц" to now.minusMonths(1),
+                    "Квартал" to now.minusMonths(3),
+                    "Год" to now.minusYears(1)
                 )
+
+                val types = listOf("Свидание", "Кино", "Театр", "Путешествие", "Сюрприз", "Цветы")
+
+                val result = StringBuilder()
+
+                for ((intervalName, startDate) in intervals) {
+                    result.append("$intervalName:\n")
+                    for (type in types) {
+                        val count = moments.count { moment ->
+                            try {
+                                val momentDate = LocalDate.parse(moment.date, formatter)
+                                momentDate.isAfter(startDate) && moment.type == type
+                            } catch (e: Exception) {
+                                false
+                            }
+                        }
+                        result.append("  $type: $count\n")
+                    }
+                    result.append("\n")
+                }
+
+                _stats.postValue(result.toString().trim())
             }
         }
     }

@@ -3,7 +3,6 @@ package com.example.diaryapp.ui.moment
 import android.app.DatePickerDialog
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import android.view.*
 import android.widget.ArrayAdapter
 import android.widget.Toast
@@ -43,7 +42,6 @@ class EditMomentFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Настройка Spinner
         val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, eventTypes)
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         binding.editType.adapter = adapter
@@ -108,7 +106,6 @@ class EditMomentFragment : Fragment() {
             }
         }
 
-        // Наблюдаем за результатом вставки/обновления
         viewModel.insertionSuccess.observe(viewLifecycleOwner) { success ->
             success?.let {
                 if (it) {

@@ -12,10 +12,8 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        // Устанавливаем ActionBar
         setSupportActionBar(findViewById(R.id.toolbar))
 
-        // Добавим задержку для инициализации NavController
         try {
             val navHostFragment = supportFragmentManager
                 .findFragmentById(R.id.nav_host_fragment) as? NavHostFragment
@@ -23,7 +21,6 @@ class MainActivity : AppCompatActivity() {
             val navController = navHostFragment?.navController
                 ?: throw IllegalStateException("NavController not found")
 
-            // Настроим ActionBar с NavController
             setupActionBarWithNavController(navController)
             Log.d("MainActivity", "NavController successfully initialized")
 

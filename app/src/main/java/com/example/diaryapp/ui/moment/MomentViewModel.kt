@@ -44,7 +44,7 @@ class MomentViewModel(application: Application) : AndroidViewModel(application) 
     fun update(moment: Moment) = viewModelScope.launch {
         try {
             repository.updateMoment(moment)
-            Log.d("MomentViewModel", "Moment updated: $moment")  // Логируем обновление момента
+            Log.d("MomentViewModel", "Moment updated: $moment")
         } catch (e: Exception) {
             Log.e("MomentViewModel", "Error updating moment", e)
         }
