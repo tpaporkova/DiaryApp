@@ -43,16 +43,18 @@ class HomeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        // Открытие DatePicker для выбора даты начала отношений
         binding.startDateEditText.setOnClickListener {
             showDatePicker()
         }
 
+        // Открытие выбора изображения профиля
         binding.profileImageView.setOnClickListener {
             openImagePicker()
         }
 
+        // Сохранение данных (имена и дата)
         binding.buttonSaveNames.setOnClickListener {
-            // Сохраняем имена вручную (вдруг EditText не успел отдать текст в two-way binding)
             val userName = binding.editUserName.text.toString()
             val partnerName = binding.editPartnerName.text.toString()
             val startDate = viewModel.startDate.value ?: ""
@@ -60,11 +62,13 @@ class HomeFragment : Fragment() {
             viewModel.updateUserData(userName, partnerName, startDate)
         }
 
+        // Переход на экран добавления момента
         binding.buttonAddMoment.setOnClickListener {
             val action = HomeFragmentDirections.actionHomeFragmentToEditMomentFragment(momentId = 0)
             findNavController().navigate(action)
         }
 
+        // Переход на экран списка моментов
         binding.buttonViewMoments.setOnClickListener {
             findNavController().navigate(R.id.action_homeFragment_to_momentListFragment)
         }

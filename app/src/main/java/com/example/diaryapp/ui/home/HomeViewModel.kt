@@ -17,6 +17,15 @@ class HomeViewModel : ViewModel() {
     private val _daysTogether = MutableLiveData<String>("")
     val daysTogether: LiveData<String> get() = _daysTogether
 
+    private val _weeksTogether = MutableLiveData<String>("")
+    val weeksTogether: LiveData<String> get() = _weeksTogether
+
+    private val _monthsTogether = MutableLiveData<String>("")
+    val monthsTogether: LiveData<String> get() = _monthsTogether
+
+    private val _yearsTogether = MutableLiveData<String>("")
+    val yearsTogether: LiveData<String> get() = _yearsTogether
+
     private val _anniversaryIn = MutableLiveData<String>("")
     val anniversaryIn: LiveData<String> get() = _anniversaryIn
 
@@ -34,7 +43,7 @@ class HomeViewModel : ViewModel() {
 
     fun updateStartDate(startDate: String) {
         _startDate.value = startDate
-        calculateDaysTogetherAndAnniversary()
+        calculateRelationshipStats()
     }
 
     // Метод для обновления всех данных (если нужно сразу)
@@ -42,10 +51,10 @@ class HomeViewModel : ViewModel() {
         _userName.value = userName
         _partnerName.value = partnerName
         _startDate.value = startDate
-        calculateDaysTogetherAndAnniversary()
+        calculateRelationshipStats()
     }
 
-    private fun calculateDaysTogetherAndAnniversary() {
+    private fun calculateRelationshipStats() {
         val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
         val startDateValue = _startDate.value ?: return
 
@@ -55,6 +64,9 @@ class HomeViewModel : ViewModel() {
 
             val diffInMillis = currentDate.time - startDate.time
             val daysTogether = (diffInMillis / (1000 * 60 * 60 * 24)).toInt()
+            val weeksTogether = (daysTogether / 7).toInt()
+            val monthsTogether = (daysTogether / 30).toInt()
+            val yearsTogether = (daysTogether / 365).toInt()
 
             val anniversary = Calendar.getInstance().apply {
                 time = startDate
@@ -64,9 +76,15 @@ class HomeViewModel : ViewModel() {
             val daysToAnniversary = (diffToAnniversary / (1000 * 60 * 60 * 24)).toInt()
 
             _daysTogether.value = "Дней вместе: $daysTogether дн."
+            _weeksTogether.value = "Недель вместе: $weeksTogether нед."
+            _monthsTogether.value = "Месяцев вместе: $monthsTogether мес."
+            _yearsTogether.value = "Лет вместе: $yearsTogether лет."
             _anniversaryIn.value = "Годовщина через: $daysToAnniversary дн."
         } catch (e: Exception) {
             _daysTogether.value = ""
+            _weeksTogether.value = ""
+            _monthsTogether.value = ""
+            _yearsTogether.value = ""
             _anniversaryIn.value = ""
             e.printStackTrace()
         }
