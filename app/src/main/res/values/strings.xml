@@ -1,0 +1,22 @@
+<resources>
+    <string name="app_name">DiaryApp</string>
+
+    <string name="home">Home</string>
+    <string name="moment_list">Moments</string>
+    <string name="edit_moment">Edit Moment</string>
+    <string name="stats">Statistics</string>
+
+    <string name="add_moment">Add Moment</string>
+    <string name="save">Save</string>
+
+    <string name="hint_title">Event Type (e.g., date, cinema)</string>
+    <string name="hint_note">Write a short note...</string>
+    <string name="hint_location">Location</string>
+    <string name="hint_type">Event Type</string>
+    <string name="hint_date">Date</string>
+    <string name="hint_description">Description</string>
+    <string name="days_together">Days together: %1$d</string>
+    <string name="next_anniversary">Days to next anniversary: %1$d</string>
+
+
+</resources>

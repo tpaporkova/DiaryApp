@@ -1,0 +1,20 @@
+<resources>
+    <string name="app_name">Дневник</string>
+
+    <string name="home">Главная</string>
+    <string name="moment_list">Моменты</string>
+    <string name="edit_moment">Редактировать момент</string>
+    <string name="stats">Статистика</string>
+
+    <string name="add_moment">Добавить момент</string>
+    <string name="save">Сохранить</string>
+
+    <string name="hint_title">Название момента</string>
+    <string name="hint_note">Краткая заметка...</string>
+    <string name="hint_location">Место</string>
+    <string name="hint_type">Тип события</string>
+    <string name="hint_date">Дата</string>
+    <string name="hint_description">Описание</string>
+    <string name="days_together">Дней вместе: %1$d</string>
+    <string name="next_anniversary">До следующей годовщины: %1$d дней</string>
+</resources>
